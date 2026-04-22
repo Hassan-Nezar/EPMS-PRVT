@@ -13,7 +13,9 @@ public:
         string id, course, grade;
         cout << "\n--- Your Grades ---" << endl;
         while (file >> id >> course >> grade) {
-            if (id == sID) cout << "Course: " << course << " | Grade: " << grade << endl;
+            if (id == sID) { 
+                cout << "Course: " << course << " | Grade: " << grade << endl;
+            }
         }
         file.close();
     }
