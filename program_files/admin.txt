@@ -1,0 +1,10 @@
+Balthazar Grimm 00001111 admin1 Head_of_Operations
+Cora Thorne 00002222 admin2 Senior_Registrar
+Dante Alighieri 00003333 admin3 Librarian_Specialist
+Beatrice Port 00004444 admin4 Financial_Officer
+Leopold Fitz 00005555 admin5 Lab_Coordinator
+Jemma Simmons 00006666 admin6 Safety_Inspector
+Lance Hunter 00007777 admin7 Campus_Security_Chief
+Bobbi Morse 00008888 admin8 Admissions_Director
+Mackenzie Alf 00009999 admin9 Facility_Manager
+Elena YoYo 00001010 admin10 Human_Resources

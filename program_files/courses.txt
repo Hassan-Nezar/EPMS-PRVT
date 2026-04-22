@@ -1,0 +1,10 @@
+CS101 Intro_to_Programming 3
+MAT202 Linear_Algebra 4
+PHY301 Classical_Mechanics 3
+BIO105 Cell_Biology 3
+NET205 Network_Security 4
+ENG101 Technical_Writing 2
+ART200 Digital_Design 3
+ECO101 Microeconomics 3
+CHM110 Organic_Chemistry 4
+HIS202 Ancient_Civilizations 3
