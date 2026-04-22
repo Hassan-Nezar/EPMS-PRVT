@@ -13,4 +13,4 @@ to make the program/application highly interactive with many features.<br>
 - README.md (project information)<br>
 - main.cpp (main application file)<br>
 - src/ (for class implementation .cpp files)<br>
-- include/ (for class declarations .h files)<br>
+- include/ (for class declarations .h files)
