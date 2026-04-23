@@ -6,7 +6,7 @@
 
 using namespace std;
 
-class search_manager { // Removed the () from the class name
+class search_manager { 
 public:
     void search_user_byid(string targetID, string userRole) {
         int slength = targetID.length();
@@ -15,7 +15,7 @@ public:
             if (slength == 8) {
                 string first4 = targetID.substr(0, 4);
 
-                // Check for Admin (0000)
+                
                 if (first4 == "0000") {
                     if (userRole == "Admin") {
                         ifstream file("program_files/admin.txt");
@@ -29,7 +29,7 @@ public:
                         cout << "Access Denied: Professors cannot search for admins!" << endl;
                     }
                 }
-                // Check for Professor (9999)
+                
                 else if (first4 == "9999") {
                     ifstream file("program_files/professor.txt");
                     string firstn, lastn, fileID, pass, faculty, salary;
@@ -39,7 +39,7 @@ public:
                         }
                     }
                 }
-                // Default: Check Students
+                
                 else {
                     ifstream file("program_files/student.txt");
                     string firstn, lastn, fileID, pass, gpa, year, major;

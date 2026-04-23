@@ -23,7 +23,7 @@ public:
     virtual void displayInfo() {
         cout << "Name: " << firstName << " " << lastName << " | Role: " << role << endl;
     }
-}; // <--- MUST HAVE THIS SEMICOLON
+}; 
 
 class Student : public User {
 private:
@@ -37,7 +37,7 @@ public:
         User::displayInfo();
         cout << "GPA: " << gpa << " | Year: " << year << " | Major: " << major << endl;
     }
-}; // <--- MUST HAVE THIS SEMICOLON
+}; 
 
 class Professor : public User {
 private:

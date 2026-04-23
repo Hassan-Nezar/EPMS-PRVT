@@ -1,20 +1,19 @@
 #include <iostream>
 #include <string>
-#include <cstdlib> // For system("CLS")
+#include <cstdlib>
 #include "include/auth_manager.h"
 #include "include/User.h"
 #include "include/course_manager.h"
 #include "include/professor_utils.h"
 #include "include/student_utils.h"
 #include "include/system_admin.h"
-#include "include/search_manager.h" // Your custom search engine
-
+#include "include/search_manager.h" 
 using namespace std;
 
 void showHeader() {
-    // system("CLS"); // Uncomment this if you want the screen to clear every time
+    
     cout << "\n================================================" << endl;
-    cout << "   ZEWAIL CITY ENTERPRISE MANAGEMENT SYSTEM     " << endl;
+    cout << "           UNIVERSITY MANAGEMENT SYSTEM     " << endl;
     cout << "================================================" << endl;
 }
 
@@ -25,7 +24,7 @@ int main() {
     Attendance_manager attendMgr;
     Student_utilities studUtils;
     Reporting_manager reportMgr;
-    search_manager sm; // Initializing your search class
+    search_manager sm;
 
     while (true) {
         showHeader();
@@ -42,7 +41,7 @@ int main() {
             int choice = 0;
             cout << "\nWelcome back, " << res.first_name << "!" << endl;
 
-            // --- ADMIN MENU ---
+            //admin
             if (res.role == "Admin") {
                 while (choice != 6) {
                     cout << "\n--- Admin Dashboard ---\n1. Profile\n2. Add Course\n3. Univ. Stats\n4. System Check\n5. SEARCH DIRECTORY\n6. Logout\nChoice: ";
@@ -54,7 +53,7 @@ int main() {
                     if (choice == 5) { string target; cout << "Enter ID: "; cin >> target; sm.search_user_byid(target, res.role); }
                 }
             } 
-            // --- PROFESSOR MENU ---
+            //professor
             else if (res.role == "Professor") {
                 while (choice != 6) {
                     cout << "\n--- Professor Dashboard ---\n1. Profile\n2. Assign Grade\n3. Mark Attendance\n4. View Class List\n5. SEARCH DIRECTORY\n6. Logout\nChoice: ";
@@ -66,7 +65,7 @@ int main() {
                     if (choice == 5) { string target; cout << "Enter ID: "; cin >> target; sm.search_user_byid(target, res.role); }
                 }
             }
-            // --- STUDENT MENU ---
+            //student
             else if (res.role == "Student") {
                 while (choice != 5) {
                     cout << "\n--- Student Portal ---\n1. Profile\n2. My Transcript\n3. Enroll in Course\n4. Course Catalog\n5. Logout\nChoice: ";

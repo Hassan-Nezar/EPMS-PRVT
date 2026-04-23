@@ -10,7 +10,7 @@ using namespace std;
 
 class CourseManager {
 public:
-    // For Admins: Adds a new course to the catalog
+    //for admin
     void addCourse(string code, string name, string credits) {
         ofstream file("program_files/courses.txt", ios::app);
         if (file.is_open()) {
@@ -21,13 +21,13 @@ public:
         }
     }
 
-    // For Students: Signs them up for a class
+    //for student
     void enrollStudent(string studentID, string courseCode) {
         ifstream courseFile("program_files/courses.txt");
         string c, n, cr;
         bool exists = false;
 
-        // Check if the course actually exists first
+        //check if course exists
         while (courseFile >> c >> n >> cr) {
             if (c == courseCode) {
                 exists = true;
@@ -46,7 +46,7 @@ public:
         }
     }
 
-    // For Everyone: Lists all courses
+    //lists courses
     void listAllCourses() {
         ifstream file("program_files/courses.txt");
         string code, name, credits;

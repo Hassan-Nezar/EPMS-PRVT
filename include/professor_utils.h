@@ -10,13 +10,13 @@ using namespace std;
 
 class ProfessorUtils {
 public:
-    // This function records a grade for a student in a specific course
+    
     void setStudentGrade(string studentID, string courseCode, string grade) {
     ifstream enrollFile("program_files/enrollments.txt");
     string sID, cCode;
     bool isEnrolled = false;
 
-    // VALIDATION LOOP
+    
     while (enrollFile >> sID >> cCode) {
         if (sID == studentID && cCode == courseCode) {
             isEnrolled = true;
@@ -35,7 +35,7 @@ public:
     }
 }
 
-    // Shows the professor who is in their classes (using enrollments.txt)
+    
     void viewEnrolledStudents(string courseCode) {
         ifstream file("program_files/enrollments.txt");
         string sID, cCode;

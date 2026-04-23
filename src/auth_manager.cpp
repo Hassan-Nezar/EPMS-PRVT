@@ -1,6 +1,6 @@
 #include "../include/auth_manager.h"
 
-// Keeping your original parser logic exactly as is
+
 auth_manager::loginparser_result auth_manager::login_parser(string name, string id, string password) {
     string first_name_construct = ""; 
     string last_name_construct = ""; 
@@ -62,42 +62,42 @@ auth_manager::login_result auth_manager::login(string name, string id, string pa
     result.success = false;
 
     string fn, ln, ident, pass, pos;
-    string ex1, ex2, ex3; // Temporary strings for the extra file columns
+    string ex1, ex2, ex3; 
     bool info_check = false;
 
     if (parsed.id1r == "0000") {
         pos = "Admin";
         ifstream file("program_files/admin.txt");
-        // Admins might only have name, id, pass, and maybe a "Bio"
+        
         while (file >> fn >> ln >> ident >> pass >> ex1) {
             if (parsed.firstnamer == fn && parsed.lastnamer == ln && ((parsed.id1r + parsed.id2r) == ident) && parsed.passr == pass) {
                info_check = true;
-               result.extra1 = ex1; 
+               result.extra1 = ex1; //for bio
                break;
             }
         }
     } else if (parsed.id1r == "9999") {
         pos = "Professor"; 
         ifstream file("program_files/professor.txt");
-        // Professor file: fn ln id pass department salary
+        
         while (file >> fn >> ln >> ident >> pass >> ex1 >> ex2) {
             if (parsed.firstnamer == fn && parsed.lastnamer == ln && ((parsed.id1r + parsed.id2r) == ident) && parsed.passr == pass) {
                info_check = true;
-               result.extra1 = ex1; // Department
-               result.extra2 = ex2; // Salary
+               result.extra1 = ex1; // for department
+               result.extra2 = ex2; // for salary
                break;
             }
         }
     } else {
         pos = "Student";
         ifstream file("program_files/student.txt");
-        // Student file: fn ln id pass gpa year major
+        
         while (file >> fn >> ln >> ident >> pass >> ex1 >> ex2 >> ex3) {
             if (parsed.firstnamer == fn && parsed.lastnamer == ln && ((parsed.id1r + parsed.id2r) == ident) && parsed.passr == pass) {
                info_check = true;
-               result.extra1 = ex1; // GPA
-               result.extra2 = ex2; // Year
-               result.extra3 = ex3; // Major
+               result.extra1 = ex1; //for gpa
+               result.extra2 = ex2; //for year
+               result.extra3 = ex3; //for major
                break;
             }
         }

@@ -25,7 +25,7 @@ class View_search {
 public:
     void globalSearch(string term) {
         cout << "Searching for: " << term << "... (Results displayed if found)" << endl;
-        // Logic to search courses.txt
+        //not done
     }
 };
 #endif
