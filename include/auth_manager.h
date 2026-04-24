@@ -32,6 +32,10 @@ public:
     loginparser_result login_parser(string name, string id, string password);
     login_result login(string name, string id, string password);
     void logout();
+
+    void register_user();
 };
+
+
 
 #endif

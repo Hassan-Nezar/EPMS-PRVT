@@ -1,7 +1,7 @@
 #include "../include/auth_manager.h"
 
 
-auth_manager::loginparser_result auth_manager::login_parser(string name, string id, string password) {
+auth_manager::loginparser_result auth_manager::login_parser(string name, string id, string password) { //login parser method
     string first_name_construct = ""; 
     string last_name_construct = ""; 
     vector<char> first_name; 
@@ -56,7 +56,7 @@ auth_manager::loginparser_result auth_manager::login_parser(string name, string 
     return r;
 }
 
-auth_manager::login_result auth_manager::login(string name, string id, string password) {
+auth_manager::login_result auth_manager::login(string name, string id, string password) { //login method
     loginparser_result parsed = login_parser(name, id, password);
     login_result result;
     result.success = false;
@@ -117,4 +117,39 @@ auth_manager::login_result auth_manager::login(string name, string id, string pa
     return result;
 }
 
-void auth_manager::logout() {}
+void auth_manager::register_user() {
+    string fname, lname, year, pass, major;
+    int majorChoice;
+    
+    //inpuits
+    cout << "Enter your First Name: "; 
+    cin >> fname;
+    cout << "Enter your Last Name: "; 
+    cin >> lname;
+    cout << "Enter your year (e.g., 1 for Freshman): "; 
+    cin >> year;
+    cout << "Enter your account password: "; 
+    cin >> pass;
+
+    cout << "\nChoose your Major:\n";
+    cout << "1. Cyber_Security\n2. AI_Robotics\n3. Game_Design\n4. Astrophysics\n5. Bio_Informatics\n";
+    cout << "6. Quantum_Computing\n7. Civil_Engineering\n8. Marine_Biology\n9. Software_Systems\n10. Data_Science\n";
+    cout << "Choice: "; 
+    cin >> majorChoice;
+
+    // use index for input in array
+    string majors[] = {"Unknown", "Cyber_Security", "AI_Robotics", "Game_Design", "Astrophysics", "Bio_Informatics", "Quantum_Computing", "Civil_Engineering", "Marine_Biology", "Software_Systems", "Data_Science"};
+    
+    if (majorChoice >= 1 && majorChoice <= 10) {
+        major = majors[majorChoice];
+    } else {
+        major = "Undeclared"; 
+    }
+
+    //apend in register_queue.txt file
+    ofstream file("program_files/register_queue.txt", ios::app);
+    file << fname << " " << lname << " " << year << " " << pass << " " << major << endl;
+    file.close();
+
+    cout << "\n[Success] Application submitted! Please wait for Admin approval." << endl;
+}

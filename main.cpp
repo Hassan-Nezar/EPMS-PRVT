@@ -1,14 +1,14 @@
-#include <iostream>
-#include <string>
-#include <cstdlib>
 #include "include/auth_manager.h"
-#include "include/User.h"
 #include "include/course_manager.h"
+#include "include/course.h"
 #include "include/professor_utils.h"
+#include "include/search_manager.h"
 #include "include/student_utils.h"
 #include "include/system_admin.h"
-#include "include/search_manager.h" 
-using namespace std;
+#include "include/user.h"
+
+
+
 
 void showHeader() {
     
@@ -82,3 +82,7 @@ int main() {
     }
     return 0;
 }
+ 
+ 
+ 
+ 

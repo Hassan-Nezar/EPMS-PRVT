@@ -14,6 +14,88 @@ public:
     void promoteUser(string id) { 
         cout << "User " << id << " has been promoted to Senior Status." << endl; 
     }
+
+    #include <vector>
+
+void check_register() {
+    ifstream file("program_files/register_queue.txt");
+    if (!file.is_open()) { //check if file is open
+        cout << "Queue file not found or empty." << endl;
+        return;
+    }
+
+    // vector library works like dynamic array
+    vector<string> fnames, lnames, years, passes, majors;
+    string f, l, y, p, m;
+    int count = 1;
+
+    cout << "\nRegistrations in queue: " << endl;
+    
+    // Read the queue
+    while (file >> f >> l >> y >> p >> m) {
+        cout << "[" << count << "] " << f << " " << l << " | Year: " << y << " | Major: " << m << endl;
+        
+        fnames.push_back(f); 
+        lnames.push_back(l);
+        years.push_back(y); 
+        passes.push_back(p); 
+        majors.push_back(m);
+        count++;
+    }
+    file.close();
+
+    if (fnames.empty()) { //check if file is empty
+        cout << "No registrations in queue right now." << endl;
+        return;
+    }
+
+    // 1. The "Identifier" Input
+    int registry;
+    cout << "\nEnter the Number of the registry(or 0 to cancel): ";
+    cin >> registry;
+
+    if (registry > 0 && registry <= fnames.size()) {
+        int index = registry - 1; // vector like array index start at 0
+        char decision;
+        
+        // 2. Accept or Deny
+        cout << "Process " << fnames[index] << "? (A)ccept or (D)eny: ";
+        cin >> decision;
+
+        if (decision == 'A' || decision == 'a') {
+            string last4;
+            cout << "Enter last 4 digits of student new ID: ";
+            cin >> last4;
+
+            // Glue them together! (e.g., "2026" + "1122" = "20261122")
+            string final_id = years[index] + last4;
+
+            // write to student.txt file
+            ofstream student_file("program_files/student.txt", ios::app);
+            student_file << fnames[index] << " " << lnames[index] << " " << final_id << " " << passes[index] << " 0.0 " << years[index] << " " << majors[index] << endl;
+            student_file.close();
+            
+            cout << "student accepted!" << endl;
+        } 
+        else if (decision == 'D' || decision == 'd') {
+            cout << "student denied!" << endl;
+        } else {
+            cout << "Invalid choice. Aborting process." << endl;
+            return; 
+        }
+
+        //ios::truc is used to delete file
+        ofstream rewrite_file("program_files/register_queue.txt", ios::trunc); 
+        
+        // after delete file content, you write everyone back again except the processed registratioen
+        for (int i = 0; i < fnames.size(); i++) {
+            if (i != index) { 
+                rewrite_file << fnames[i] << " " << lnames[i] << " " << years[i] << " " << passes[i] << " " << majors[i] << endl;
+            }
+        }
+        rewrite_file.close();
+    }
+}
 };
 
 // Class 10: Logic for university-wide data summaries
@@ -85,5 +167,7 @@ public:
             }
         }
     };
+
+
 
 #endif
