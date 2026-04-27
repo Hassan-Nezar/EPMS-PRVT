@@ -16,19 +16,18 @@
 
 class UIManager {
 public:
-    // This tracks which window is currently active
+    //fsm
     enum AppState { MAIN_MENU, LOGIN, REGISTER, ADMIN_DASH, STUDENT_DASH, PROF_DASH };
     AppState currentState = MAIN_MENU;
 
-    // Fixed-size buckets for ImGui to catch keyboard input
+    //imgui doesnth ave string
     char inputUser[64] = "";
     char inputID[64] = "";
     char inputPass[64] = "";
     char inputMajor[64] = "";
     char inputYear[64] = "";
 
-    // The Master Function called in your main loop
-    // You pass your existing manager by reference (&)
+    
     void render(auth_manager& auth) {
         switch (currentState) {
             case MAIN_MENU:    showMainMenu(); break;

@@ -2,13 +2,13 @@
 #define SYSTEMADMIN_H
 
 #include <iostream>
-#include <fstream> // Fixed: Added missing fstream for logging
+#include <fstream> 
 #include <string>
 #include <vector>
-
+//this file is still under works
 using namespace std;
 
-// Class 9: Handling administrative status changes
+
 class Admin_utilities {
 public:
     void promoteUser(string id) { 
@@ -44,12 +44,12 @@ void check_register() {
     }
     file.close();
 
-    if (fnames.empty()) { //check if file is empty
+    if (fnames.empty()) { //check if vector is empty
         cout << "No registrations in queue right now." << endl;
         return;
     }
 
-    // 1. The "Identifier" Input
+    
     int registry;
     cout << "\nEnter the Number of the registry(or 0 to cancel): ";
     cin >> registry;
@@ -58,7 +58,7 @@ void check_register() {
         int index = registry - 1; // vector like array index start at 0
         char decision;
         
-        // 2. Accept or Deny
+        // Accept or Deny
         cout << "Process " << fnames[index] << "? (A)ccept or (D)eny: ";
         cin >> decision;
 
@@ -67,7 +67,7 @@ void check_register() {
             cout << "Enter last 4 digits of student new ID: ";
             cin >> last4;
 
-            // Glue them together! (e.g., "2026" + "1122" = "20261122")
+            // put data together in formatte string
             string final_id = years[index] + last4;
 
             // write to student.txt file
@@ -98,7 +98,7 @@ void check_register() {
 }
 };
 
-// Class 10: Logic for university-wide data summaries
+//placeholder
 class Reporting_manager {
 public:
     void generateSystemReport() { 
@@ -148,7 +148,7 @@ void calculateUniversityAverage() {
     }
 };
 
-// Class 11: Monitoring data file health
+//placeholder
 class System_monitor {
 public:
     void checkServerStatus() { 
@@ -156,7 +156,7 @@ public:
     }
 };
 
-// Class 12: Internal logging for every action taken
+//placeholder
 class Database_logger {
 public:
     void logAction(string msg) { 

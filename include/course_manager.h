@@ -14,7 +14,6 @@ public:
     void addCourse(string code, string name, string credits) {
         ofstream file("program_files/courses.txt", ios::app);
         if (file.is_open()) {
-            // Endl first to avoid the "gluing" issue we saw earlier
             file << endl << code << " " << name << " " << credits;
             file.close();
             cout << "Course " << code << " added successfully." << endl;

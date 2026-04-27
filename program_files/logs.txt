@@ -2,3 +2,5 @@
 [LOG]: Admin Balthazar Grimm added course NET205
 [LOG]: Student Jasper Thorne enrolled in CS101
 [LOG]: Professor Silas Sterling assigned grade A to 20261122[LOG]: User Login: 99992222
+[LOG]: User Login: 00001111
+[LOG]: User Login: 00001111
