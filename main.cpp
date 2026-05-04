@@ -1,6 +1,5 @@
 #include "include/auth_manager.h"
 #include "include/course_manager.h"
-#include "include/course.h"
 #include "include/professor_utils.h"
 #include "include/search_manager.h"
 #include "include/student_utils.h"
