@@ -1,9 +1,7 @@
 #ifndef USER_H
 #define USER_H
 
-#include <iostream>
 #include <string>
-#include <vector>
 
 using namespace std;
 
@@ -12,59 +10,65 @@ protected:
     string firstName, lastName, id, password, role;
 
 public:
-    User(string fn, string ln, string ident, string pass, string r) {
-        firstName = fn;
-        lastName = ln;
-        id = ident;
-        password = pass;
-        role = r;
-    }
-    virtual ~User() {} 
-    virtual void displayInfo() {
-        cout << "Name: " << firstName << " " << lastName << " | Role: " << role << endl;
-    }
-}; 
+    User(string fn, string ln, string ident, string pass, string r);
+    virtual ~User();
+    virtual void displayInfo();
+
+    // getters:
+string get_firstname() const;
+string get_lastname() const;
+string get_id() const;
+string get_password() const;
+string get_role() const;
+// setters:
+void set_firstname(string fn);
+void set_lastname(string ln);
+void set_id(string ident);
+void set_password(string passwd);
+void set_role(string rl);
+
+};
+
+
 
 class Student : public User {
 private:
     string gpa, year, major;
 public:
-    Student(string fn, string ln, string ident, string pass, string g, string y, string m)
-        : User(fn, ln, ident, pass, "Student") {
-        gpa = g; year = y; major = m;
-    }
-    void displayInfo() override {
-        User::displayInfo();
-        cout << "GPA: " << gpa << " | Year: " << year << " | Major: " << major << endl;
-    }
-}; 
+    Student(string fn, string ln, string ident, string pass, string g, string y, string m);
+    void displayInfo() override;
+
+    // getters:
+    string get_gpa() const;
+    string get_year() const;
+    string get_major() const;
+    // setters:
+    void set_gpa(string gp);
+    void set_year(string yr);
+    void set_major(string mjr);
+};
 
 class Professor : public User {
 private:
     string department, salary;
 public:
-    Professor(string fn, string ln, string ident, string pass, string dept, string sal)
-        : User(fn, ln, ident, pass, "Professor") {
-        department = dept; salary = sal;
-    }
-    void displayInfo() override {
-        User::displayInfo();
-        cout << "Dept: " << department << " | Salary: " << salary << endl;
-    }
-}; 
+    Professor(string fn, string ln, string ident, string pass, string dept, string sal);
+    void displayInfo() override;
+
+    //getters:
+    string get_department() const;
+    string get_salary() const;
+    //setters:
+    void set_department();
+    void set_salary();
+};
 
 class Admin : public User {
 private:
     string bio;
 public:
-    Admin(string fn, string ln, string ident, string pass, string b)
-        : User(fn, ln, ident, pass, "Admin") {
-        bio = b;
-    }
-    void displayInfo() override {
-        User::displayInfo();
-        cout << "Admin Bio: " << bio << endl;
-    }
-}; 
+    Admin(string fn, string ln, string ident, string pass, string b);
+    void displayInfo() override;
+};
 
 #endif

@@ -8,3 +8,5 @@ ART200 Digital_Design 3
 ECO101 Microeconomics 3
 CHM110 Organic_Chemistry 4
 HIS202 Ancient_Civilizations 3
+CSAI100 Intro_to_cs 1
+CSAI151 k 3
