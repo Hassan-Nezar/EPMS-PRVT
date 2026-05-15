@@ -7,10 +7,7 @@
 
 using namespace std;
 
-class ProfessorUtils {
-public:
-    
-    void setStudentGrade(string studentID, string courseCode, string grade) {
+    void ProfessorUtils::setStudentGrade(string studentID, string courseCode, string grade) {
     ifstream enrollFile("program_files/enrollments.txt");
     string sID, cCode;
     bool isEnrolled = false;
@@ -35,7 +32,7 @@ public:
 }
 
     
-    void viewEnrolledStudents(string courseCode) {
+    void ProfessorUtils::viewEnrolledStudents(string courseCode) {
         ifstream file("program_files/enrollments.txt");
         string sID, cCode;
         cout << "\n--- Students Enrolled in " << courseCode << " ---" << endl;
@@ -46,11 +43,8 @@ public:
         }
         file.close();
     }
-};
 
-class Attendance_manager {
-public:
-    void markAttendance(string studentID, string courseCode, string date, string status) {
+    void Attendance_manager::markAttendance(string studentID, string courseCode, string date, string status) {
         ofstream file("program_files/attendance.txt", ios::app);
         if (file.is_open()) {
             file << studentID << " " << courseCode << " " << date << " " << status << endl;
@@ -58,4 +52,3 @@ public:
             cout << "Attendance recorded: Student " << studentID << " was " << status << "." << endl;
         }
     }
-};

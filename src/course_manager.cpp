@@ -7,10 +7,8 @@
 
 using namespace std;
 
-class CourseManager {
-public:
     //for admin
-    void addCourse(string code, string name, string credits) {
+    void CourseManager::addCourse(string code, string name, string credits) {
         ofstream file("program_files/courses.txt", ios::app);
         if (file.is_open()) {
             file << endl << code << " " << name << " " << credits;
@@ -20,7 +18,7 @@ public:
     }
 
     //for student
-    void enrollStudent(string studentID, string courseCode) {
+    void CourseManager::enrollStudent(string studentID, string courseCode) {
         ifstream courseFile("program_files/courses.txt");
         string c, n, cr;
         bool exists = false;
@@ -45,7 +43,7 @@ public:
     }
 
     //lists courses
-    void listAllCourses() {
+    void CourseManager::listAllCourses() {
         ifstream file("program_files/courses.txt");
         string code, name, credits;
         cout << "\n--- University Course Catalog ---" << endl;
@@ -56,4 +54,3 @@ public:
         }
         file.close();
     }
-};

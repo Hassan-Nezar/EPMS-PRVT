@@ -8,15 +8,13 @@
 using namespace std;
 
 
-class Admin_utilities {
-public:
-    void promoteUser(string id) { 
+    void Admin_utilities::promoteUser(string id) { 
         cout << "User " << id << " has been promoted to Senior Status." << endl; 
     }
 
     #include <vector>
 
-void check_register() {
+void Admin_utilities::check_register() {
     ifstream file("program_files/register_queue.txt");
     if (!file.is_open()) { //check if file is open
         cout << "Queue file not found or empty." << endl;
@@ -95,19 +93,15 @@ void check_register() {
         rewrite_file.close();
     }
 }
-};
-
 //placeholder
-class Reporting_manager {
-public:
-    void generateSystemReport() { 
+    void Reporting_manager::generateSystemReport() { 
         cout << "\n--- University Statistics ---" << endl;
         cout << "System Status: Online" << endl;
         cout << "Database Integrity: 100%" << endl;
         cout << "Generating logs... Done." << endl;
     }
 
-    void calculateCourseAverage(string courseCode) {
+    void Reporting_manager::calculateCourseAverage(string courseCode) {
     ifstream file("program_files/grades.txt");
     string id, cCode, grade;
     double total = 0;
@@ -127,7 +121,7 @@ public:
     else cout << "No grades found for this course." << endl;
     }
 
-void calculateUniversityAverage() {
+void Reporting_manager::calculateUniversityAverage() {
     ifstream file("program_files/student.txt");
     string fn, ln, id, pass, gpa, yr, maj;
     double totalGpa = 0;
@@ -145,24 +139,15 @@ void calculateUniversityAverage() {
         cout << "Average University GPA: " << (totalGpa / count) << endl;
         }
     }
-};
-
 //placeholder
-class System_monitor {
-public:
-    void checkServerStatus() { 
+    void System_monitor::checkServerStatus() { 
         cout << "[MONITOR]: All .txt database files are currently reachable." << endl; 
     }
-};
-
 //placeholder
-class Database_logger {
-public:
-    void logAction(string msg) { 
+    void Database_logger::logAction(string msg) { 
         ofstream file("program_files/logs.txt", ios::app);
         if (file.is_open()) {
             file << "[LOG]: " << msg << endl;
             file.close();
             }
         }
-    };

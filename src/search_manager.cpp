@@ -5,9 +5,7 @@
 
 using namespace std;
 
-class search_manager { 
-public:
-    void search_user_byid(string targetID, string userRole) {
+void search_manager::search_user_byid(string targetID, string userRole) {
         int slength = targetID.length();
         
         if (userRole == "Admin" || userRole == "Professor") {
@@ -55,4 +53,3 @@ public:
             cout << "Access Denied: Students cannot use the search feature." << endl;
         }
     }
-};
