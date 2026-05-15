@@ -8,3 +8,4 @@ Cyrus Voke 20263434 pass77 2.4 2027 Civil_Engineering
 Elowen Star 20265656 pass88 3.6 2024 Marine_Biology
 Gideon Grey 20267878 pass99 3.1 2025 Software_Systems
 Iris Moon 20269090 pass00 3.8 2026 Data_Science
+Maya Nasser 20261904 maya123 0.0 2026 Cyber_Security

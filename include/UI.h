@@ -2,16 +2,20 @@
 #define UI_H
 
 #include "imgui.h"
-#include "include/auth_manager.h"
-#include "include/user.h"
-#include "include/course_manager.h"
-#include "include/professor_utils.h"
-#include "include/student_utils.h"
-#include "include/system_admin.h"
-#include "include/search_manager.h"
+#include "auth_manager.h"
+#include "user.h"
+#include "course_manager.h"
+#include "professor_utils.h"
+#include "student_utils.h"
+#include "system_admin.h"
+#include "search_manager.h"
 
 #include <string>
 #include <vector>
+#include <cstring>
+#include <cstdlib>
+#include <iostream>
+#include <sstream>
 
 // ─────────────────────────────────────────────
 //  Small helper: draw a coloured banner text
@@ -20,6 +24,15 @@ static void BannerText(const char* text, ImVec4 col = ImVec4(0.4f, 0.8f, 1.0f, 1
     ImGui::PushStyleColor(ImGuiCol_Text, col);
     ImGui::Text("%s", text);
     ImGui::PopStyleColor();
+}
+
+template <typename Func>
+static std::string CaptureCout(Func func) {
+    std::ostringstream output;
+    std::streambuf* oldCout = std::cout.rdbuf(output.rdbuf());
+    func();
+    std::cout.rdbuf(oldCout);
+    return output.str();
 }
 
 class UIManager {
@@ -41,6 +54,7 @@ public:
     // ── Feedback messages ───────────────────────
     std::string feedbackMsg = "";
     ImVec4      feedbackCol = ImVec4(1, 1, 1, 1);
+    std::string outputMsg = "";
 
     // ─────────────────────────────────────────────
     //  Master render — call this every frame
@@ -64,6 +78,17 @@ public:
     }
 
 private:
+    void showOutputBox() {
+        if (!outputMsg.empty()) {
+            ImGui::Spacing();
+            ImGui::Separator();
+            ImGui::TextDisabled("Output:");
+            ImGui::BeginChild("##output", ImVec2(0, 110), true);
+            ImGui::TextWrapped("%s", outputMsg.c_str());
+            ImGui::EndChild();
+        }
+    }
+
     // ══════════════════════════════════════════════
     //  [1]  MAIN MENU
     // ══════════════════════════════════════════════
@@ -84,11 +109,13 @@ private:
 
         if (ImGui::Button("Login", ImVec2(380, 45))) {
             feedbackMsg = "";
+            outputMsg = "";
             currentState = LOGIN;
         }
         ImGui::Spacing();
         if (ImGui::Button("Register as Student", ImVec2(380, 45))) {
             feedbackMsg = "";
+            outputMsg = "";
             currentState = REGISTER;
         }
         ImGui::Spacing();
@@ -120,7 +147,10 @@ private:
         ImGui::Spacing();
 
         if (ImGui::Button("Login", ImVec2(200, 40))) {
-            auto res = auth.login(std::string(lName), std::string(lID), std::string(lPass));
+            auth_manager::login_result res;
+            outputMsg = CaptureCout([&]() {
+                res = auth.login(std::string(lName), std::string(lID), std::string(lPass));
+            });
             if (res.success) {
                 loggedInUser = res;
                 feedbackMsg  = "";
@@ -138,8 +168,10 @@ private:
             }
         }
         ImGui::SameLine();
-        if (ImGui::Button("Back", ImVec2(100, 40)))
+        if (ImGui::Button("Back", ImVec2(100, 40))) {
+            outputMsg = "";
             currentState = MAIN_MENU;
+        }
 
         if (!feedbackMsg.empty()) {
             ImGui::Spacing();
@@ -147,6 +179,7 @@ private:
             ImGui::TextWrapped("%s", feedbackMsg.c_str());
             ImGui::PopStyleColor();
         }
+        showOutputBox();
         ImGui::End();
     }
 
@@ -187,12 +220,9 @@ private:
             bool valid = (rFName[0] != '\0' && rLName[0] != '\0' &&
                           rYear[0]  != '\0' && rPass[0]  != '\0');
             if (valid) {
-                // Write directly to register_queue.txt (mirrors auth_manager::register_user)
-                std::ofstream file("program_files/register_queue.txt", std::ios::app);
-                file << rFName << " " << rLName << " "
-                     << rYear  << " " << rPass  << " "
-                     << majors[rMajorIdx] << "\n";
-                file.close();
+                outputMsg = CaptureCout([&]() {
+                    auth.register_user(rFName, rLName, rYear, rPass, majors[rMajorIdx]);
+                });
 
                 feedbackMsg = "[OK] Application submitted! Awaiting Admin approval.";
                 feedbackCol = ImVec4(0.4f, 1.0f, 0.5f, 1.0f);
@@ -204,6 +234,7 @@ private:
                 memset(rPass,  0, sizeof(rPass));
                 rMajorIdx = 0;
             } else {
+                outputMsg = "";
                 feedbackMsg = "[!] Please fill in all fields.";
                 feedbackCol = ImVec4(1.0f, 0.6f, 0.2f, 1.0f);
             }
@@ -211,6 +242,7 @@ private:
         ImGui::SameLine();
         if (ImGui::Button("Cancel", ImVec2(100, 40))) {
             feedbackMsg = "";
+            outputMsg = "";
             currentState = MAIN_MENU;
         }
 
@@ -220,6 +252,7 @@ private:
             ImGui::TextWrapped("%s", feedbackMsg.c_str());
             ImGui::PopStyleColor();
         }
+        showOutputBox();
         ImGui::End();
     }
 
@@ -237,6 +270,9 @@ private:
 
     // search inputs
     char adminSearchID[32] = "";
+    vector<registration_request> registerQueue;
+    int selectedRegister = -1;
+    char registerLast4[8] = "";
 
     void showAdminDash(auth_manager&      auth,
                        CourseManager&     courseMgr,
@@ -260,9 +296,13 @@ private:
 
         // ── [1] Profile ──────────────────────────
         if (ImGui::CollapsingHeader("Profile")) {
-            Admin a(loggedInUser.first_name, loggedInUser.last_name,
-                    loggedInUser.id, "HIDDEN", loggedInUser.extra1);
-            a.displayInfo();   // prints to stdout — same as terminal
+            if (ImGui::Button("Show Profile##admin", ImVec2(150, 30))) {
+                Admin a(loggedInUser.first_name, loggedInUser.last_name,
+                        loggedInUser.id, "HIDDEN", loggedInUser.extra1);
+                outputMsg = CaptureCout([&]() {
+                    a.displayInfo();
+                });
+            }
         }
 
         // ── [2] Add Course ───────────────────────
@@ -272,13 +312,16 @@ private:
             ImGui::InputText("Credits",        acCred, sizeof(acCred));
             if (ImGui::Button("Add##course", ImVec2(120, 30))) {
                 if (acCode[0] && acName[0] && acCred[0]) {
-                    courseMgr.addCourse(acCode, acName, acCred);
+                    outputMsg = CaptureCout([&]() {
+                        courseMgr.addCourse(acCode, acName, acCred);
+                    });
                     feedbackMsg = "[OK] Course added.";
                     feedbackCol = ImVec4(0.4f, 1.0f, 0.5f, 1.0f);
                     memset(acCode, 0, sizeof(acCode));
                     memset(acName, 0, sizeof(acName));
                     memset(acCred, 0, sizeof(acCred));
                 } else {
+                    outputMsg = "";
                     feedbackMsg = "[!] Fill all course fields.";
                     feedbackCol = ImVec4(1.0f, 0.6f, 0.2f, 1.0f);
                 }
@@ -287,28 +330,123 @@ private:
 
         // ── [3] University Stats ─────────────────
         if (ImGui::CollapsingHeader("University Stats")) {
-            if (ImGui::Button("Generate Report##admin", ImVec2(200, 30)))
-                reportMgr.generateSystemReport();  // output goes to stdout/file as normal
-            ImGui::TextDisabled("(output printed to console / report file)");
+            if (ImGui::Button("Generate Report##admin", ImVec2(200, 30))) {
+                outputMsg = CaptureCout([&]() {
+                    reportMgr.generateSystemReport();
+                });
+            }
         }
 
         // ── [4] System Check ─────────────────────
         if (ImGui::CollapsingHeader("System Check")) {
             if (ImGui::Button("Check Server Status", ImVec2(200, 30))) {
                 System_monitor monitor;
-                monitor.checkServerStatus();
+                outputMsg = CaptureCout([&]() {
+                    monitor.checkServerStatus();
+                });
             }
-            ImGui::TextDisabled("(output printed to console)");
         }
 
         // ── [5] Search Directory ─────────────────
         if (ImGui::CollapsingHeader("Search Directory")) {
             ImGui::InputText("User ID##asearch", adminSearchID, sizeof(adminSearchID));
             if (ImGui::Button("Search##admin", ImVec2(120, 30))) {
-                if (adminSearchID[0])
-                    sm.search_user_byid(std::string(adminSearchID), loggedInUser.role);
+                if (adminSearchID[0]) {
+                    outputMsg = CaptureCout([&]() {
+                        sm.search_user_byid(std::string(adminSearchID), loggedInUser.role);
+                    });
+                }
             }
-            ImGui::TextDisabled("(results printed to console)");
+        }
+
+        // ── [6] Review Registrations ─────────────
+        if (ImGui::CollapsingHeader("Review Registrations")) {
+            Admin_utilities adminUtils;
+
+            if (ImGui::Button("Refresh Queue", ImVec2(150, 30))) {
+                registerQueue = adminUtils.get_register_queue();
+                if (selectedRegister >= registerQueue.size()) {
+                    selectedRegister = -1;
+                }
+                std::ostringstream msg;
+                if (registerQueue.empty()) {
+                    msg << "No registrations in queue right now.";
+                } else {
+                    msg << "Registrations in queue:\n";
+                    for (int i = 0; i < registerQueue.size(); i++) {
+                        msg << "[" << (i + 1) << "] "
+                            << registerQueue[i].fname << " " << registerQueue[i].lname
+                            << " | Year: " << registerQueue[i].year
+                            << " | Major: " << registerQueue[i].major << "\n";
+                    }
+                }
+                outputMsg = msg.str();
+            }
+
+            if (!registerQueue.empty()) {
+                ImGui::Spacing();
+                ImGui::Text("Pending Applications:");
+                ImGui::BeginChild("##registerQueue", ImVec2(0, 130), true);
+                for (int i = 0; i < registerQueue.size(); i++) {
+                    std::string label = registerQueue[i].fname + " " + registerQueue[i].lname +
+                                        " | Year: " + registerQueue[i].year +
+                                        " | Major: " + registerQueue[i].major;
+                    if (ImGui::Selectable(label.c_str(), selectedRegister == i)) {
+                        selectedRegister = i;
+                    }
+                }
+                ImGui::EndChild();
+
+                if (selectedRegister >= 0 && selectedRegister < registerQueue.size()) {
+                    ImGui::Text("Selected: %s %s",
+                                registerQueue[selectedRegister].fname.c_str(),
+                                registerQueue[selectedRegister].lname.c_str());
+                } else {
+                    ImGui::TextDisabled("Select an application from the list.");
+                }
+            } else {
+                ImGui::TextDisabled("Click Refresh Queue to load pending registrations.");
+            }
+
+            ImGui::InputText("Last 4 ID Digits", registerLast4, sizeof(registerLast4));
+
+            if (ImGui::Button("Accept##register", ImVec2(120, 30))) {
+                if (selectedRegister < 0 || selectedRegister >= registerQueue.size()) {
+                    outputMsg = "";
+                    feedbackMsg = "[!] Select an application first.";
+                    feedbackCol = ImVec4(1.0f, 0.6f, 0.2f, 1.0f);
+                } else if (strlen(registerLast4) != 4) {
+                    outputMsg = "";
+                    feedbackMsg = "[!] Enter exactly 4 ID digits.";
+                    feedbackCol = ImVec4(1.0f, 0.6f, 0.2f, 1.0f);
+                } else {
+                    outputMsg = CaptureCout([&]() {
+                        adminUtils.accept_register(selectedRegister + 1, registerLast4);
+                    });
+                    registerQueue = adminUtils.get_register_queue();
+                    selectedRegister = -1;
+                    memset(registerLast4, 0, sizeof(registerLast4));
+                    feedbackMsg = "[OK] Registration processed.";
+                    feedbackCol = ImVec4(0.4f, 1.0f, 0.5f, 1.0f);
+                }
+            }
+
+            ImGui::SameLine();
+            if (ImGui::Button("Deny##register", ImVec2(120, 30))) {
+                if (selectedRegister < 0 || selectedRegister >= registerQueue.size()) {
+                    outputMsg = "";
+                    feedbackMsg = "[!] Select an application first.";
+                    feedbackCol = ImVec4(1.0f, 0.6f, 0.2f, 1.0f);
+                } else {
+                    outputMsg = CaptureCout([&]() {
+                        adminUtils.deny_register(selectedRegister + 1);
+                    });
+                    registerQueue = adminUtils.get_register_queue();
+                    selectedRegister = -1;
+                    feedbackMsg = "[OK] Registration processed.";
+                    feedbackCol = ImVec4(0.4f, 1.0f, 0.5f, 1.0f);
+                }
+            }
         }
 
         ImGui::Spacing();
@@ -320,9 +458,11 @@ private:
             ImGui::PopStyleColor();
             ImGui::Spacing();
         }
+        showOutputBox();
 
         if (ImGui::Button("Logout", ImVec2(120, 35))) {
             feedbackMsg  = "";
+            outputMsg = "";
             currentState = MAIN_MENU;
         }
         ImGui::End();
@@ -366,10 +506,14 @@ private:
 
         // ── [1] Profile ──────────────────────────
         if (ImGui::CollapsingHeader("Profile")) {
-            Professor p(loggedInUser.first_name, loggedInUser.last_name,
-                        loggedInUser.id, "HIDDEN",
-                        loggedInUser.extra1, loggedInUser.extra2);
-            p.displayInfo();
+            if (ImGui::Button("Show Profile##prof", ImVec2(150, 30))) {
+                Professor p(loggedInUser.first_name, loggedInUser.last_name,
+                            loggedInUser.id, "HIDDEN",
+                            loggedInUser.extra1, loggedInUser.extra2);
+                outputMsg = CaptureCout([&]() {
+                    p.displayInfo();
+                });
+            }
         }
 
         // ── [2] Assign Grade ─────────────────────
@@ -379,13 +523,16 @@ private:
             ImGui::InputText("Grade##pgrade",       pGradeVal,    sizeof(pGradeVal));
             if (ImGui::Button("Assign##grade", ImVec2(120, 30))) {
                 if (pGradeSID[0] && pGradeCourse[0] && pGradeVal[0]) {
-                    profUtils.setStudentGrade(pGradeSID, pGradeCourse, pGradeVal);
+                    outputMsg = CaptureCout([&]() {
+                        profUtils.setStudentGrade(pGradeSID, pGradeCourse, pGradeVal);
+                    });
                     feedbackMsg = "[OK] Grade assigned.";
                     feedbackCol = ImVec4(0.4f, 1.0f, 0.5f, 1.0f);
                     memset(pGradeSID, 0, sizeof(pGradeSID));
                     memset(pGradeCourse, 0, sizeof(pGradeCourse));
                     memset(pGradeVal, 0, sizeof(pGradeVal));
                 } else {
+                    outputMsg = "";
                     feedbackMsg = "[!] Fill all grade fields.";
                     feedbackCol = ImVec4(1.0f, 0.6f, 0.2f, 1.0f);
                 }
@@ -400,7 +547,9 @@ private:
             ImGui::InputText("Status (P/A/L)",     pAttStatus, sizeof(pAttStatus));
             if (ImGui::Button("Mark##att", ImVec2(120, 30))) {
                 if (pAttSID[0] && pAttCourse[0] && pAttDate[0] && pAttStatus[0]) {
-                    attendMgr.markAttendance(pAttSID, pAttCourse, pAttDate, pAttStatus);
+                    outputMsg = CaptureCout([&]() {
+                        attendMgr.markAttendance(pAttSID, pAttCourse, pAttDate, pAttStatus);
+                    });
                     feedbackMsg = "[OK] Attendance recorded.";
                     feedbackCol = ImVec4(0.4f, 1.0f, 0.5f, 1.0f);
                     memset(pAttSID,    0, sizeof(pAttSID));
@@ -408,6 +557,7 @@ private:
                     memset(pAttDate,   0, sizeof(pAttDate));
                     memset(pAttStatus, 0, sizeof(pAttStatus));
                 } else {
+                    outputMsg = "";
                     feedbackMsg = "[!] Fill all attendance fields.";
                     feedbackCol = ImVec4(1.0f, 0.6f, 0.2f, 1.0f);
                 }
@@ -418,20 +568,24 @@ private:
         if (ImGui::CollapsingHeader("View Class List")) {
             ImGui::InputText("Course Code##pclass", pClassCourse, sizeof(pClassCourse));
             if (ImGui::Button("View##class", ImVec2(120, 30))) {
-                if (pClassCourse[0])
-                    profUtils.viewEnrolledStudents(pClassCourse);
+                if (pClassCourse[0]) {
+                    outputMsg = CaptureCout([&]() {
+                        profUtils.viewEnrolledStudents(pClassCourse);
+                    });
+                }
             }
-            ImGui::TextDisabled("(output printed to console)");
         }
 
         // ── [5] Search Directory ─────────────────
         if (ImGui::CollapsingHeader("Search Directory")) {
             ImGui::InputText("User ID##psearch", profSearchID, sizeof(profSearchID));
             if (ImGui::Button("Search##prof", ImVec2(120, 30))) {
-                if (profSearchID[0])
-                    sm.search_user_byid(std::string(profSearchID), loggedInUser.role);
+                if (profSearchID[0]) {
+                    outputMsg = CaptureCout([&]() {
+                        sm.search_user_byid(std::string(profSearchID), loggedInUser.role);
+                    });
+                }
             }
-            ImGui::TextDisabled("(results printed to console)");
         }
 
         ImGui::Spacing();
@@ -443,9 +597,11 @@ private:
             ImGui::PopStyleColor();
             ImGui::Spacing();
         }
+        showOutputBox();
 
         if (ImGui::Button("Logout", ImVec2(120, 35))) {
             feedbackMsg  = "";
+            outputMsg = "";
             currentState = MAIN_MENU;
         }
         ImGui::End();
@@ -479,17 +635,23 @@ private:
 
         // ── [1] Profile ──────────────────────────
         if (ImGui::CollapsingHeader("Profile")) {
-            Student s(loggedInUser.first_name, loggedInUser.last_name,
-                      loggedInUser.id, "HIDDEN",
-                      loggedInUser.extra1, loggedInUser.extra2, loggedInUser.extra3);
-            s.displayInfo();
+            if (ImGui::Button("Show Profile##student", ImVec2(150, 30))) {
+                Student s(loggedInUser.first_name, loggedInUser.last_name,
+                          loggedInUser.id, "HIDDEN",
+                          loggedInUser.extra1, loggedInUser.extra2, loggedInUser.extra3);
+                outputMsg = CaptureCout([&]() {
+                    s.displayInfo();
+                });
+            }
         }
 
         // ── [2] My Transcript ────────────────────
         if (ImGui::CollapsingHeader("My Transcript")) {
-            if (ImGui::Button("View Grades", ImVec2(160, 30)))
-                studUtils.viewGrades(loggedInUser.id);
-            ImGui::TextDisabled("(output printed to console)");
+            if (ImGui::Button("View Grades", ImVec2(160, 30))) {
+                outputMsg = CaptureCout([&]() {
+                    studUtils.viewGrades(loggedInUser.id);
+                });
+            }
         }
 
         // ── [3] Enroll in Course ─────────────────
@@ -497,11 +659,14 @@ private:
             ImGui::InputText("Course Code##senroll", sEnrollCode, sizeof(sEnrollCode));
             if (ImGui::Button("Enroll##s", ImVec2(120, 30))) {
                 if (sEnrollCode[0]) {
-                    courseMgr.enrollStudent(loggedInUser.id, sEnrollCode);
+                    outputMsg = CaptureCout([&]() {
+                        courseMgr.enrollStudent(loggedInUser.id, sEnrollCode);
+                    });
                     feedbackMsg = "[OK] Enrollment request sent.";
                     feedbackCol = ImVec4(0.4f, 1.0f, 0.5f, 1.0f);
                     memset(sEnrollCode, 0, sizeof(sEnrollCode));
                 } else {
+                    outputMsg = "";
                     feedbackMsg = "[!] Enter a course code.";
                     feedbackCol = ImVec4(1.0f, 0.6f, 0.2f, 1.0f);
                 }
@@ -510,9 +675,11 @@ private:
 
         // ── [4] Course Catalog ───────────────────
         if (ImGui::CollapsingHeader("Course Catalog")) {
-            if (ImGui::Button("List All Courses", ImVec2(180, 30)))
-                courseMgr.listAllCourses();
-            ImGui::TextDisabled("(output printed to console)");
+            if (ImGui::Button("List All Courses", ImVec2(180, 30))) {
+                outputMsg = CaptureCout([&]() {
+                    courseMgr.listAllCourses();
+                });
+            }
         }
 
         ImGui::Spacing();
@@ -524,9 +691,11 @@ private:
             ImGui::PopStyleColor();
             ImGui::Spacing();
         }
+        showOutputBox();
 
         if (ImGui::Button("Logout", ImVec2(120, 35))) {
             feedbackMsg  = "";
+            outputMsg = "";
             currentState = MAIN_MENU;
         }
         ImGui::End();

@@ -11,25 +11,22 @@ protected:
 
 public:
     User(string fn, string ln, string ident, string pass, string r);
-    virtual ~User();
+    virtual ~User() = default;
     virtual void displayInfo();
 
     // getters:
-string get_firstname() const;
-string get_lastname() const;
-string get_id() const;
-string get_password() const;
-string get_role() const;
-// setters:
-void set_firstname(string fn);
-void set_lastname(string ln);
-void set_id(string ident);
-void set_password(string passwd);
-void set_role(string rl);
-
+    string get_firstname() const;
+    string get_lastname() const;
+    string get_id() const;
+    string get_password() const;
+    string get_role() const;
+    // setters:
+    void set_firstname(string fn);
+    void set_lastname(string ln);
+    void set_id(string ident);
+    void set_password(string passwd);
+    void set_role(string rl);
 };
-
-
 
 class Student : public User {
 private:
@@ -59,8 +56,8 @@ public:
     string get_department() const;
     string get_salary() const;
     //setters:
-    void set_department();
-    void set_salary();
+    void set_department(string dpt); // Fixed: Added parameter
+    void set_salary(string slry);    // Fixed: Added parameter
 };
 
 class Admin : public User {
@@ -69,6 +66,10 @@ private:
 public:
     Admin(string fn, string ln, string ident, string pass, string b);
     void displayInfo() override;
+
+    // Added missing getters/setters for Admin
+    string get_bio() const;
+    void set_bio(string b);
 };
 
 #endif

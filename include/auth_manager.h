@@ -34,6 +34,7 @@ public:
     void logout();
 
     void register_user();
+    void register_user(string fname, string lname, string year, string pass, string major);
 };
 
 

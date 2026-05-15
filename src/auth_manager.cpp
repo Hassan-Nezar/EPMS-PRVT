@@ -146,10 +146,14 @@ void auth_manager::register_user() {
         major = "Undeclared"; 
     }
 
+    register_user(fname, lname, year, pass, major);
+
+    cout << "\n[Success] Application submitted! Please wait for Admin approval." << endl;
+}
+
+void auth_manager::register_user(string fname, string lname, string year, string pass, string major) {
     //apend in register_queue.txt file
     ofstream file("program_files/register_queue.txt", ios::app);
     file << fname << " " << lname << " " << year << " " << pass << " " << major << endl;
     file.close();
-
-    cout << "\n[Success] Application submitted! Please wait for Admin approval." << endl;
 }

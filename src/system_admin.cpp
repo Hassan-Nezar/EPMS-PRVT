@@ -14,6 +14,78 @@ using namespace std;
 
     #include <vector>
 
+vector<registration_request> Admin_utilities::get_register_queue() {
+    ifstream file("program_files/register_queue.txt");
+    vector<registration_request> queue;
+    registration_request request;
+
+    while (file >> request.fname >> request.lname >> request.year >> request.pass >> request.major) {
+        queue.push_back(request);
+    }
+    file.close();
+
+    return queue;
+}
+
+void Admin_utilities::accept_register(int index, string last4) {
+    vector<registration_request> queue = get_register_queue();
+
+    if (index < 1 || index > queue.size()) {
+        cout << "Invalid registry number." << endl;
+        return;
+    }
+
+    if (last4.length() != 4) {
+        cout << "Last 4 digits must be exactly 4 characters." << endl;
+        return;
+    }
+
+    int request_index = index - 1;
+    registration_request request = queue[request_index];
+    string final_id = request.year + last4;
+
+    ofstream student_file("program_files/student.txt", ios::app);
+    student_file << request.fname << " " << request.lname << " " << final_id << " "
+                 << request.pass << " 0.0 " << request.year << " " << request.major << endl;
+    student_file.close();
+
+    ofstream rewrite_file("program_files/register_queue.txt", ios::trunc);
+    for (int i = 0; i < queue.size(); i++) {
+        if (i != request_index) {
+            rewrite_file << queue[i].fname << " " << queue[i].lname << " "
+                         << queue[i].year << " " << queue[i].pass << " "
+                         << queue[i].major << endl;
+        }
+    }
+    rewrite_file.close();
+
+    cout << "student accepted!" << endl;
+    cout << "New student ID: " << final_id << endl;
+}
+
+void Admin_utilities::deny_register(int index) {
+    vector<registration_request> queue = get_register_queue();
+
+    if (index < 1 || index > queue.size()) {
+        cout << "Invalid registry number." << endl;
+        return;
+    }
+
+    int request_index = index - 1;
+
+    ofstream rewrite_file("program_files/register_queue.txt", ios::trunc);
+    for (int i = 0; i < queue.size(); i++) {
+        if (i != request_index) {
+            rewrite_file << queue[i].fname << " " << queue[i].lname << " "
+                         << queue[i].year << " " << queue[i].pass << " "
+                         << queue[i].major << endl;
+        }
+    }
+    rewrite_file.close();
+
+    cout << "student denied!" << endl;
+}
+
 void Admin_utilities::check_register() {
     ifstream file("program_files/register_queue.txt");
     if (!file.is_open()) { //check if file is open

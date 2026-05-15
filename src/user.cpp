@@ -1,135 +1,136 @@
 #include "../include/user.h"
-
 #include <iostream>
 #include <string>
 #include <vector>
 
 using namespace std;
 
-class User {
-protected:
-    string firstName, lastName, id, password, role;
+User::User(string fn, string ln, string ident, string pass, string r) {
+    firstName = fn;
+    lastName = ln;
+    id = ident;
+    password = pass;
+    role = r;
+}
 
-public:
-    User(string fn, string ln, string ident, string pass, string r) {
-        firstName = fn;
-        lastName = ln;
-        id = ident;
-        password = pass;
-        role = r;
-    }
-    virtual ~User() {} 
-    virtual void displayInfo() {
-        cout << "Name: " << firstName << " " << lastName << " | Role: " << role << endl;
-    }
 
-    //getters:
-    string get_firstname() const {
-        return firstName;
-    }
-    string get_lastname() const {
-        return lastName;
-    }
-    string get_id() const {
-        return id;
-    }
-    string get_password() const {
-        return password;
-    }
-    string get_role() const {
-        return role;
-    }
-    //setters:
-    void set_firstname(string fn) {
-        firstName = fn;
-    }
-    void set_lastname(string ln) {
-        lastName = ln;
-    }
-    void set_id(string ident) {
-        id = ident;
-    }
-    void set_password(string passwd) {
-        password = passwd;
-    }
-    void set_role(string rl) {
-        role = rl;
-    }
-}; 
+void User::displayInfo() {
+    cout << "Name: " << firstName << " " << lastName << " | Role: " << role << endl;
+}
 
-class Student : public User {
-private:
-    string gpa, year, major;
-public:
-    Student(string fn, string ln, string ident, string pass, string g, string y, string m)
-        : User(fn, ln, ident, pass, "Student") {
-        gpa = g; year = y; major = m;
-    }
-    void displayInfo() override {
-        User::displayInfo();
-        cout << "GPA: " << gpa << " | Year: " << year << " | Major: " << major << endl;
-    }
-    //getters:
-    string get_gpa() const {
-        return gpa;
-    }
-    string get_year() const {
-        return year;
-    }
-    string get_major() const {
-        return major;
-    }
-    //setters:
-    void set_gpa(string gp) {
-        gpa = gp;
-    }
-    void set_year(string yr) {
-        year = yr;
-    }
-    void set_major(string mjr) {
-        major = mjr;
-    }
-}; 
+//getters:
+string User::get_firstname() const {
+    return firstName;
+}
+string User::get_lastname() const {
+    return lastName;
+}
+string User::get_id() const {
+    return id;
+}
+string User::get_password() const {
+    return password;
+}
+string User::get_role() const {
+    return role;
+}
 
-class Professor : public User {
-private:
-    string department, salary;
-public:
-    Professor(string fn, string ln, string ident, string pass, string dept, string sal)
-        : User(fn, ln, ident, pass, "Professor") {
-        department = dept; salary = sal;
-    }
-    void displayInfo() override {
-        User::displayInfo();
-        cout << "Dept: " << department << " | Salary: " << salary << endl;
-    }
-    
-    //getters:
-        string get_department() const {
-        return department;
-    }
-    string get_salary() const {
-        return salary;
-    }
-    //setters:
-    void set_department(string dpt) {
-        department = dpt;
-    }
-    void set_salary(string slry) {
-        salary = slry;
-    }
-}; 
+//setters:
+void User::set_firstname(string fn) {
+    firstName = fn;
+}
+void User::set_lastname(string ln) {
+    lastName = ln;
+}
+void User::set_id(string ident) {
+    id = ident;
+}
+void User::set_password(string passwd) {
+    password = passwd;
+}
+void User::set_role(string rl) {
+    role = rl;
+}
 
-class Admin : public User {
-private:
-    string bio;
-public:
-    Admin(string fn, string ln, string ident, string pass, string b)
-        : User(fn, ln, ident, pass, "Admin") {
-        bio = b;
-    }
-    void displayInfo() override {
-        User::displayInfo();
-        cout << "Admin Bio: " << bio << endl;
-    }
-}; 
+// ---------------- Student ----------------
+
+Student::Student(string fn, string ln, string ident, string pass, string g, string y, string m)
+    : User(fn, ln, ident, pass, "Student") {
+    gpa = g;
+    year = y;
+    major = m;
+}
+
+void Student::displayInfo() {
+    User::displayInfo();
+    cout << "GPA: " << gpa << " | Year: " << year << " | Major: " << major << endl;
+}
+
+string Student::get_gpa() const {
+    return gpa;
+}
+string Student::get_year() const {
+    return year;
+}
+string Student::get_major() const {
+    return major;
+}
+
+void Student::set_gpa(string gp) {
+    gpa = gp;
+}
+void Student::set_year(string yr) {
+    year = yr;
+}
+void Student::set_major(string mjr) {
+    major = mjr;
+}
+
+// professor
+
+Professor::Professor(string fn, string ln, string ident, string pass, string dept, string sal)
+    : User(fn, ln, ident, pass, "Professor") {
+    department = dept;
+    salary = sal;
+}
+
+void Professor::displayInfo() {
+    User::displayInfo();
+    cout << "Dept: " << department << " | Salary: " << salary << endl;
+}
+
+string Professor::get_department() const {
+    return department;
+}
+string Professor::get_salary() const {
+    return salary;
+}
+
+// Fixed: Changed User:: to Professor::
+void Professor::set_department(string dpt) {
+    department = dpt;
+}
+void Professor::set_salary(string slry) {
+    salary = slry;
+}
+
+// admin
+
+Admin::Admin(string fn, string ln, string ident, string pass, string b)
+    : User(fn, ln, ident, pass, "Admin") {
+    bio = b;
+}
+
+void Admin::displayInfo() {
+    User::displayInfo();
+    cout << "Admin Bio: " << bio << endl;
+}
+
+// Added missing Admin implementations
+string Admin::get_bio() const {
+    return bio;
+}
+
+void Admin::set_bio(string b) {
+    bio = b;
+}
